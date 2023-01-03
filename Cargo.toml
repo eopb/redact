@@ -1,7 +1,16 @@
 [package]
 name = "redact"
 version = "0.0.1"
+authors = ["Ethan Brierley <ethanboxx@gmail.com>"]
+license = "MIT/Apache-2.0"
+readme = "README.md"
+description = """
+todo
+"""
+repository = "https://github.com/ethanboxx/tide-tracing"
 edition = "2021"
+exclude = [".github"]
+
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
