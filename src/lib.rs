@@ -1,7 +1,7 @@
 #![forbid(unsafe_code)]
 // #![warn(missing_docs)]
 
-use std::{any::type_name, fmt};
+use core::{any::type_name, fmt};
 
 use serde::{Deserialize, Serialize};
 
@@ -10,12 +10,14 @@ use serde::{Deserialize, Serialize};
 pub struct Secret<T, const DISPLAY_TYPE_NAME: bool = true>(T);
 
 impl<T> fmt::Debug for Secret<T, false> {
+    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "[REDACTED]")
     }
 }
 
 impl<T> fmt::Debug for Secret<T, true> {
+    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "[REDACTED {}]", type_name::<T>())
     }
@@ -34,6 +36,7 @@ mod private {
 
 impl<T, const DISPLAY_TYPE_NAME: bool> ExposeSecret for Secret<T, DISPLAY_TYPE_NAME> {
     type Secret = T;
+    #[inline]
     fn expose_secret(&self) -> &Self::Secret {
         &self.0
     }
