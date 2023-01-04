@@ -5,8 +5,9 @@ authors = ["Ethan Brierley <ethanboxx@gmail.com>"]
 license = "MIT/Apache-2.0"
 readme = "README.md"
 description = """
-todo
+A simple library for keeping secrets out of logs.
 """
+documentation = "https://docs.rs/redact/"
 repository = "https://github.com/eopb/redact"
 edition = "2021"
 exclude = [".github"]

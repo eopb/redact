@@ -1,5 +1,10 @@
 # Redact
 
+[![License](https://img.shields.io/crates/l/redact.svg)](https://crates.io/crates/redact)
+[![Latest version](https://img.shields.io/crates/v/redact.svg)](https://crates.io/crates/redact)
+[![Latest Docs](https://docs.rs/redact/badge.svg)](https://docs.rs/redact/)
+[![downloads-badge](https://img.shields.io/crates/d/redact.svg)](https://crates.io/crates/redact)
+
 A simple library for keeping secrets out of logs.
 
 Redact provides a wrapper that prevents secrets from appearing in logs.
@@ -41,3 +46,6 @@ If you need strong memory protection before a `Secret` is dropped consider [secr
 [`Zeroize`]: https://docs.rs/secrecy/latest/secrecy/trait.Zeroize.html
 [`mlock(2)`]: https://man7.org/linux/man-pages/man2/mlock.2.html
 [`mprotect(2)`]: https://man7.org/linux/man-pages/man2/mprotect.2.html
+
+## Docs
+- [API docs](https://docs.rs/redact/)
