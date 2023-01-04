@@ -3,12 +3,24 @@
 
 use core::{any::type_name, fmt};
 
-use serde::{Deserialize, Serialize};
-#[derive(Serialize, Deserialize, Default, Copy, Clone, Eq, PartialEq)]
-#[serde(transparent)]
-pub struct Secret<T>(T);
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 /// See [module level documentation][crate]
+#[derive(Default, Copy, Clone, Eq, PartialEq)]
+pub struct Secret<T>(T);
+
+impl<T: Serialize> Serialize for Secret<T> {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        self.0.serialize(serializer)
+    }
+}
+
+impl<'de, T: Deserialize<'de>> Deserialize<'de> for Secret<T> {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        T::deserialize(deserializer).map(Self)
+    }
+}
+
 impl<T> Secret<T> {
     #[inline]
     pub fn new(secret: T) -> Self {
