@@ -1,24 +1,14 @@
+#![doc = include_str!("../README.md")]
 #![forbid(unsafe_code)]
-// #![warn(missing_docs)]
 
 use core::{any::type_name, fmt};
 
 use serde::{Deserialize, Serialize};
-/// ```
-/// use redact::Secret;
-/// let encryption_key: Secret<&str> = Secret::new("hello world");
-/// assert_eq!("[REDACTED &str]", format!("{encryption_key:?}"))
-/// ```
-/// ```
-/// use redact::Secret;
-/// use redact::ExposeSecret;
-/// let encryption_key: Secret<&str> = Secret::new("hello world");
-/// assert_eq!("hello world", *encryption_key.expose_secret())
-/// ```
 #[derive(Serialize, Deserialize, Default, Copy, Clone, Eq, PartialEq)]
 #[serde(transparent)]
 pub struct Secret<T>(T);
 
+/// See [module level documentation][crate]
 impl<T> Secret<T> {
     #[inline]
     pub fn new(secret: T) -> Self {
@@ -40,6 +30,7 @@ impl<T> fmt::Debug for Secret<T> {
     }
 }
 
+/// See [module level documentation][crate]
 pub trait ExposeSecret: Sealed {
     type Secret;
     fn expose_secret(&self) -> &Self::Secret;
