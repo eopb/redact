@@ -11,6 +11,7 @@ Redact provides a wrapper that prevents secrets from appearing in logs.
 
 ```rust
 use redact::Secret;
+
 let encryption_key = Secret::new("hello world");
 assert_eq!("[REDACTED &str]", format!("{encryption_key:?}"))
 ```
@@ -18,8 +19,8 @@ assert_eq!("[REDACTED &str]", format!("{encryption_key:?}"))
 The underlying secret contained within the wrapper can only be accessed using the [ExposeSecret] trait.
 
 ```rust
-use redact::Secret;
-use redact::ExposeSecret;
+use redact::{Secret, ExposeSecret};
+
 let encryption_key = Secret::new("hello world");
 assert_eq!("hello world", *encryption_key.expose_secret())
 ```
