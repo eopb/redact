@@ -3,7 +3,7 @@
 
 use core::{any::type_name, fmt};
 
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 /// ```
 /// use redact::Secret;
 /// let encryption_key: Secret<&str> = Secret::new("hello world");
@@ -15,9 +15,20 @@ use serde::{Deserialize, Serialize};
 /// let encryption_key: Secret<&str> = Secret::new("hello world");
 /// assert_eq!("hello world", *encryption_key.expose_secret())
 /// ```
-#[derive(Serialize, Deserialize, Default, Copy, Clone, Eq, PartialEq)]
-#[serde(transparent)]
+#[derive(Default, Copy, Clone, Eq, PartialEq)]
 pub struct Secret<T>(T);
+
+impl<T: Serialize> Serialize for Secret<T> {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        self.0.serialize(serializer)
+    }
+}
+
+impl<'de, T: Deserialize<'de>> Deserialize<'de> for Secret<T> {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        T::deserialize(deserializer).map(Self)
+    }
+}
 
 impl<T> Secret<T> {
     #[inline]
