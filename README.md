@@ -26,7 +26,7 @@ assert_eq!("hello world", *encryption_key.expose_secret())
 ```
 
 The `Secret` type doubles as a useful documentation tool.
-Documenting values mantainers should be careful with.
+Documenting values maintainers should be careful with.
 
 ```rust,ignore
 #[derive(Debug)] // Safe since Debug is not able to "see" our `Secret`s
@@ -44,15 +44,15 @@ struct Payment {
 
 [Secrecy](https://crates.io/crates/secrecy) was the original inspiration for this crate and it has a very similar API.
 
-One significant differnece is that secrecy requires that all secrets implement [`Zeroize`] so that it can cleanly wipe secrets from memory after they are dropped.
-This unfortiantly limits the types of values that secrecy can wrap in a `Secret` since every type has to be aware of `Zeroize`.
+One significant difference is that secrecy requires that all secrets implement [`Zeroize`] so that it can cleanly wipe secrets from memory after they are dropped.
+This unfortunately limits the types of values that secrecy can wrap in a `Secret` since every type has to be aware of `Zeroize`.
 
-Redact relaxes this requirment allowing all types to be `Secret`s. If you need zeroization consider [secrecy](https://crates.io/crates/secrecy).
+Redact relaxes this requirement, allowing all types to be `Secret`s. If you need zeroization consider [secrecy](https://crates.io/crates/secrecy).
 
 ### [secrets](https://docs.rs/secrets/latest/secrets/)
 
-[Secrets](https://crates.io/crates/secrets) provides even stronger memory protecton than [secrecy](#secrecy) using [`mlock(2)`]/[`mprotect(2)`] among other things.
-If you need strong memory protection before a `Secret` is dropped consider [secrets](https://crates.io/crates/secrets).
+[Secrets](https://crates.io/crates/secrets) provides even stronger memory protection than [secrecy](#secrecy) using [`mlock(2)`]/[`mprotect(2)`] among other things.
+If you need strong memory protection before and after a `Secret` is dropped consider [secrets](https://crates.io/crates/secrets).
 
 [`Zeroize`]: https://docs.rs/secrecy/latest/secrecy/trait.Zeroize.html
 [`mlock(2)`]: https://man7.org/linux/man-pages/man2/mlock.2.html
