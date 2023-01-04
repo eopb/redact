@@ -7,7 +7,7 @@ readme = "README.md"
 description = """
 todo
 """
-repository = "https://github.com/ethanboxx/tide-tracing"
+repository = "https://github.com/eopb/redact"
 edition = "2021"
 exclude = [".github"]
 
