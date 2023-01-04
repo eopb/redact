@@ -28,6 +28,16 @@ assert_eq!("hello world", *encryption_key.expose_secret())
 The `Secret` type doubles as a useful documentation tool.
 Documenting values mantainers should be careful with.
 
+```rust,ignore
+#[derive(Debug)] // Safe since Debug is not able to "see" our `Secret`s
+struct Payment {
+    // The recipient is PII so we don't want it to appear in logs
+    recipient: Secret<String>,
+    // It's okay for the amount to appear in logs so we don't mark it with `Secret`
+    amount: u64,
+}
+```
+
 ## Comparison with alternatives
 
 ### [secrecy](https://docs.rs/secrecy/latest/secrecy/)
