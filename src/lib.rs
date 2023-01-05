@@ -4,12 +4,14 @@
 
 use core::{any::type_name, fmt};
 
+#[cfg(feature = "serde")]
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 /// See [module level documentation][crate]
 #[derive(Default, Copy, Clone, Eq, PartialEq)]
 pub struct Secret<T>(T);
 
+#[cfg(feature = "serde")]
 impl<T: Serialize> Serialize for Secret<T> {
     #[inline]
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
@@ -17,6 +19,7 @@ impl<T: Serialize> Serialize for Secret<T> {
     }
 }
 
+#[cfg(feature = "serde")]
 impl<'de, T: Deserialize<'de>> Deserialize<'de> for Secret<T> {
     #[inline]
     fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
