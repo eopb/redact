@@ -5,7 +5,7 @@
 use core::{any::type_name, fmt};
 
 /// See [module level documentation][crate]
-#[derive(Default, Copy, Clone, Eq, PartialEq)]
+#[derive(Default, Copy, Clone, Eq, PartialEq, Hash, Ord, PartialOrd)]
 pub struct Secret<T>(T);
 
 impl<T> Secret<T> {
