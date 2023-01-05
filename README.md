@@ -5,6 +5,8 @@
 [![Latest Docs](https://docs.rs/redact/badge.svg)](https://docs.rs/redact/)
 [![downloads-badge](https://img.shields.io/crates/d/redact.svg)](https://crates.io/crates/redact)
 
+[API docs](https://docs.rs/redact/)
+
 A simple library for keeping secrets out of logs.
 
 Redact provides a wrapper that prevents secrets from appearing in logs.
@@ -16,10 +18,10 @@ let encryption_key = Secret::new("hello world");
 assert_eq!("[REDACTED &str]", format!("{encryption_key:?}"))
 ```
 
-The underlying secret contained within the wrapper can only be accessed using the [ExposeSecret] trait.
+The underlying secret contained within the wrapper can only be accessed using the [expose_secret][Secret::expose_secret] method[^1].
 
 ```rust
-use redact::{Secret, ExposeSecret};
+use redact::Secret;
 
 let encryption_key = Secret::new("hello world");
 assert_eq!("hello world", *encryption_key.expose_secret())
@@ -37,6 +39,8 @@ struct Payment {
     amount: u64,
 }
 ```
+
+[^1]: [serde::Serialize] is implemented on [Secret] for convenience. Be careful when serializing since it may leak secrets without an explicit call to [expose_secret][Secret::expose_secret].
 
 ## Comparison with alternatives
 
@@ -58,5 +62,3 @@ If you need strong memory protection before and after a `Secret` is dropped cons
 [`mlock(2)`]: https://man7.org/linux/man-pages/man2/mlock.2.html
 [`mprotect(2)`]: https://man7.org/linux/man-pages/man2/mprotect.2.html
 
-## Docs
-- [API docs](https://docs.rs/redact/)
