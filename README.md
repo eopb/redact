@@ -18,7 +18,7 @@ let encryption_key = Secret::new("hello world");
 assert_eq!("[REDACTED &str]", format!("{encryption_key:?}"))
 ```
 
-The underlying secret contained within the wrapper can only be accessed using the [expose_secret][Secret::expose_secret] method[^1].
+The underlying secret contained within the wrapper can only be accessed using the [expose_secret][Secret::expose_secret] method or [expose_secret] function.
 
 ```rust
 use redact::Secret;
@@ -30,7 +30,9 @@ assert_eq!("hello world", *encryption_key.expose_secret())
 The `Secret` type doubles as a useful documentation tool.
 Documenting values maintainers should be careful with.
 
-```rust,ignore
+```rust
+use redact::Secret;
+
 #[derive(Debug)] // Safe since Debug is not able to "see" our `Secret`s
 struct Payment {
     // The recipient is PII so we don't want it to appear in logs
@@ -40,7 +42,29 @@ struct Payment {
 }
 ```
 
-[^1]: [serde::Serialize] is implemented on [Secret] for convenience. Be careful when serializing since it may leak secrets without an explicit call to [expose_secret][Secret::expose_secret].
+## Serde support
+
+For serde support ensure the serde feature is enabled in your `Cargo.toml`.
+
+```toml
+redact = { version = "0.0.9", features = ["serde"] }
+```
+
+`Deserialize` works as expected, transparently deserializing the enclosed secret.
+
+Since serialization can expose the enclosed secret it is only possible to implement `Serialize` "with" [expose_secret].
+
+```rust
+use redact::{Secret, expose_secret};
+use serde::{Serialize, Deserialize};
+
+#[derive(Serialize, Deserialize)]
+struct Payment {
+    #[serde(serialize_with = "expose_secret")]
+    recipient: Secret<String>,
+    amount: u64,
+}
+```
 
 ## Comparison with alternatives
 
