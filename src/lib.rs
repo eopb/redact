@@ -11,22 +11,6 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 #[derive(Default, Copy, Clone, Eq, PartialEq)]
 pub struct Secret<T>(T);
 
-#[cfg(feature = "serde")]
-impl<T: Serialize> Serialize for Secret<T> {
-    #[inline]
-    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-        self.expose_secret().serialize(serializer)
-    }
-}
-
-#[cfg(feature = "serde")]
-impl<'de, T: Deserialize<'de>> Deserialize<'de> for Secret<T> {
-    #[inline]
-    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        T::deserialize(deserializer).map(Self)
-    }
-}
-
 impl<T> Secret<T> {
     /// See [module level documentation][crate]
     #[inline]
@@ -52,4 +36,29 @@ impl<T> fmt::Debug for Secret<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "[REDACTED {}]", type_name::<T>())
     }
+}
+
+#[cfg(feature = "serde")]
+/// *This API requires the following crate features to be activated: `serde`*
+impl<'de, T: Deserialize<'de>> Deserialize<'de> for Secret<T> {
+    #[inline]
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        T::deserialize(deserializer).map(Self)
+    }
+}
+
+#[cfg(feature = "serde")]
+/// Exposes a [Secret] for serialization.
+///
+/// For general-purpose secret exposing see [Secret::expose_secret].
+///
+/// See [module level documentation][crate] for usage example.
+///
+/// *This API requires the following crate features to be activated: `serde`*
+#[inline]
+pub fn expose_secret<S: Serializer, T: Serialize>(
+    secret: &Secret<T>,
+    serializer: S,
+) -> Result<S::Ok, S::Error> {
+    secret.expose_secret().serialize(serializer)
 }
