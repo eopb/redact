@@ -7,7 +7,7 @@ use core::{any::type_name, fmt};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 /// See [module level documentation][crate]
-#[derive(Default, Copy, Clone, Eq, PartialEq)]
+#[derive(Default, Copy, Clone, Eq, PartialEq, Hash, Ord, PartialOrd)]
 pub struct Secret<T>(T);
 
 impl<T: Serialize> Serialize for Secret<T> {
