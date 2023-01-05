@@ -16,10 +16,10 @@ let encryption_key = Secret::new("hello world");
 assert_eq!("[REDACTED &str]", format!("{encryption_key:?}"))
 ```
 
-The underlying secret contained within the wrapper can only be accessed using the [ExposeSecret] trait.
+The underlying secret contained within the wrapper can only be accessed using the [expose_secret][Secret::expose_secret] method[^1].
 
 ```rust
-use redact::{Secret, ExposeSecret};
+use redact::Secret;
 
 let encryption_key = Secret::new("hello world");
 assert_eq!("hello world", *encryption_key.expose_secret())
@@ -37,6 +37,8 @@ struct Payment {
     amount: u64,
 }
 ```
+
+[^1]: [serde::Serialize] is implemented on [Secret] for convenience. Be careful when serializing since it may leak secrets without an explicit call to [expose_secret][Secret::expose_secret].
 
 ## Comparison with alternatives
 
