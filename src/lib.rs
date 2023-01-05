@@ -4,9 +4,6 @@
 
 use core::{any::type_name, fmt};
 
-#[cfg(feature = "serde")]
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
-
 /// See [module level documentation][crate]
 #[derive(Default, Copy, Clone, Eq, PartialEq)]
 pub struct Secret<T>(T);
@@ -37,6 +34,9 @@ impl<T> fmt::Debug for Secret<T> {
         write!(f, "[REDACTED {}]", type_name::<T>())
     }
 }
+
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 #[cfg(feature = "serde")]
 /// *This API requires the following crate features to be activated: `serde`*
