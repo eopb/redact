@@ -27,12 +27,12 @@ impl<'de, T: Deserialize<'de>> Deserialize<'de> for Secret<T> {
 impl<T> Secret<T> {
     /// See [module level documentation][crate]
     #[inline]
-    pub fn new(secret: T) -> Self {
+    pub const fn new(secret: T) -> Self {
         Self(secret)
     }
     /// See [module level documentation][crate]
     #[inline]
-    pub fn expose_secret(&self) -> &T {
+    pub const fn expose_secret(&self) -> &T {
         &self.0
     }
 }
