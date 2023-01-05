@@ -2,10 +2,10 @@
 #![no_std]
 #![forbid(unsafe_code)]
 
-use core::{any::type_name, fmt};
+use core::{any::type_name, fmt, str::FromStr};
 
 /// See [module level documentation][crate]
-#[derive(Default, Copy, Clone, Eq, PartialEq, Hash, Ord, PartialOrd)]
+#[derive(Default, Hash, Copy, Clone, Ord, PartialOrd, Eq, PartialEq)]
 pub struct Secret<T>(T);
 
 impl<T> Secret<T> {
@@ -25,6 +25,15 @@ impl<T> From<T> for Secret<T> {
     #[inline]
     fn from(secret: T) -> Self {
         Self::new(secret)
+    }
+}
+
+impl<T: FromStr> FromStr for Secret<T> {
+    type Err = T::Err;
+
+    #[inline]
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        s.parse().map(Self)
     }
 }
 
