@@ -14,6 +14,14 @@ impl<T> Secret<T> {
     pub const fn new(secret: T) -> Self {
         Self(secret)
     }
+    #[inline]
+    pub fn from(secret: impl Into<T>) -> Self {
+        Self(secret.into())
+    }
+    #[inline]
+    pub fn try_from<U: TryInto<T>>(secret: U) -> Result<Self, Secret<U::Error>> {
+        secret.try_into().map(Self).map_err(Secret)
+    }
     /// See [module level documentation][crate]
     #[inline]
     pub const fn expose_secret(&self) -> &T {
