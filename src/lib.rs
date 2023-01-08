@@ -1,5 +1,5 @@
 #![doc = include_str!("../README.md")]
-#![no_std]
+#![cfg_attr(not(feature = "std"), no_std)]
 #![forbid(unsafe_code)]
 
 use core::{any::type_name, fmt, str::FromStr};
@@ -29,11 +29,11 @@ impl<T> From<T> for Secret<T> {
 }
 
 impl<T: FromStr> FromStr for Secret<T> {
-    type Err = T::Err;
+    type Err = Secret<T::Err>;
 
     #[inline]
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        s.parse().map(Self)
+        s.parse().map(Self).map_err(Secret)
     }
 }
 
@@ -42,6 +42,23 @@ impl<T> fmt::Debug for Secret<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "[REDACTED {}]", type_name::<T>())
     }
+}
+
+#[cfg(feature = "std")]
+mod error {
+    use crate::Secret;
+
+    use core::fmt;
+    use std::error::Error;
+
+    impl<E: Error> fmt::Display for Secret<E> {
+        #[inline]
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+            <Self as fmt::Debug>::fmt(self, f)
+        }
+    }
+
+    impl<E: Error> Error for Secret<E> {}
 }
 
 #[cfg(feature = "serde")]
