@@ -14,6 +14,14 @@ impl<T> Secret<T> {
     pub const fn new(secret: T) -> Self {
         Self(secret)
     }
+    #[inline]
+    pub fn from(secret: impl Into<T>) -> Self {
+        Self(secret.into())
+    }
+    #[inline]
+    pub fn try_from<U: TryInto<T>>(secret: U) -> Result<Self, Secret<U::Error>> {
+        secret.try_into().map(Self).map_err(Secret)
+    }
     /// See [module level documentation][crate]
     #[inline]
     pub const fn expose_secret(&self) -> &T {
@@ -45,30 +53,35 @@ impl<T: FromStr> FromStr for Secret<T> {
 }
 
 impl<T> From<Option<Secret<T>>> for Secret<Option<T>> {
+    #[inline]
     fn from(secret: Option<Secret<T>>) -> Self {
         Self(secret.map(|Secret(s)| s))
     }
 }
 
 impl<T, E> From<Result<Secret<T>, E>> for Secret<Result<T, E>> {
+    #[inline]
     fn from(secret: Result<Secret<T>, E>) -> Self {
         Self(secret.map(|Secret(s)| s))
     }
 }
 
 impl<T, E> From<Result<T, Secret<E>>> for Secret<Result<T, E>> {
+    #[inline]
     fn from(secret: Result<T, Secret<E>>) -> Self {
         Self(secret.map_err(|Secret(s)| s))
     }
 }
 
 impl<T, E> From<Result<Secret<T>, Secret<E>>> for Secret<Result<T, E>> {
+    #[inline]
     fn from(secret: Result<Secret<T>, Secret<E>>) -> Self {
         Self(secret.map(|Secret(s)| s).map_err(|Secret(s)| s))
     }
 }
 
 impl<S: FromIterator<T>, T> FromIterator<Secret<T>> for Secret<S> {
+    #[inline]
     fn from_iter<I: IntoIterator<Item = Secret<T>>>(iter: I) -> Self {
         Self(S::from_iter(iter.into_iter().map(|Secret(s)| s)))
     }
