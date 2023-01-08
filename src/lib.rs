@@ -2,7 +2,7 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 #![forbid(unsafe_code)]
 
-use core::{any::type_name, fmt, str::FromStr};
+use core::{any::type_name, fmt, ops, str::FromStr};
 
 /// See [module level documentation][crate]
 #[derive(Default, Hash, Copy, Clone, Ord, PartialOrd, Eq, PartialEq)]
@@ -28,6 +28,13 @@ impl<T> From<T> for Secret<T> {
     }
 }
 
+impl<T> fmt::Debug for Secret<T> {
+    #[inline]
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "[REDACTED {}]", type_name::<T>())
+    }
+}
+
 impl<T: FromStr> FromStr for Secret<T> {
     type Err = Secret<T::Err>;
 
@@ -37,11 +44,102 @@ impl<T: FromStr> FromStr for Secret<T> {
     }
 }
 
-impl<T> fmt::Debug for Secret<T> {
-    #[inline]
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "[REDACTED {}]", type_name::<T>())
+impl<T> From<Option<Secret<T>>> for Secret<Option<T>> {
+    fn from(secret: Option<Secret<T>>) -> Self {
+        Self(secret.map(|Secret(s)| s))
     }
+}
+
+impl<T, E> From<Result<Secret<T>, E>> for Secret<Result<T, E>> {
+    fn from(secret: Result<Secret<T>, E>) -> Self {
+        Self(secret.map(|Secret(s)| s))
+    }
+}
+
+impl<T, E> From<Result<T, Secret<E>>> for Secret<Result<T, E>> {
+    fn from(secret: Result<T, Secret<E>>) -> Self {
+        Self(secret.map_err(|Secret(s)| s))
+    }
+}
+
+impl<T, E> From<Result<Secret<T>, Secret<E>>> for Secret<Result<T, E>> {
+    fn from(secret: Result<Secret<T>, Secret<E>>) -> Self {
+        Self(secret.map(|Secret(s)| s).map_err(|Secret(s)| s))
+    }
+}
+
+impl<S: FromIterator<T>, T> FromIterator<Secret<T>> for Secret<S> {
+    fn from_iter<I: IntoIterator<Item = Secret<T>>>(iter: I) -> Self {
+        Self(S::from_iter(iter.into_iter().map(|Secret(s)| s)))
+    }
+}
+
+macro_rules! ops {
+    { ($type:tt, $trait:ident, $method:ident), $($tt:tt)* } => {
+        ops!(($type, $trait, $method));
+        ops!($($tt)*);
+    };
+    { (binary, $trait:ident, $method:ident)} => {
+        impl<T, U> ops::$trait<Secret<U>> for Secret<T>
+        where
+            T: ops::$trait<U>,
+        {
+            type Output = Secret<T::Output>;
+            #[inline]
+            fn $method(self, rhs: Secret<U>) -> Self::Output {
+                Secret(self.0.$method(rhs.0))
+            }
+        }
+    };
+    { (assign, $trait:ident, $method:ident)} => {
+        impl<T, U> ops::$trait<Secret<U>> for Secret<T>
+        where
+            T: ops::$trait<U>,
+        {
+            #[inline]
+            fn $method(&mut self, rhs: Secret<U>) {
+                self.0.$method(rhs.0)
+            }
+        }
+    };
+    { (unary, $trait:ident, $method:ident)} => {
+        impl<T> ops::$trait for Secret<T>
+        where
+            T: ops::$trait,
+        {
+            type Output = Secret<T::Output>;
+            #[inline]
+            fn $method(self) -> Self::Output {
+                Secret(self.0.$method())
+            }
+        }
+    };
+    () => ()
+}
+
+ops! {
+    (binary, Add, add),
+    (assign, AddAssign, add_assign),
+    (binary, BitAnd, bitand),
+    (assign, BitAndAssign, bitand_assign),
+    (binary, BitOr, bitor),
+    (assign, BitOrAssign, bitor_assign),
+    (binary, BitXor, bitxor),
+    (assign, BitXorAssign, bitxor_assign),
+    (binary, Div, div),
+    (assign, DivAssign, div_assign),
+    (binary, Mul, mul),
+    (assign, MulAssign, mul_assign),
+    (binary, Rem, rem),
+    (assign, RemAssign, rem_assign),
+    (binary, Shl, shl),
+    (assign, ShlAssign, shl_assign),
+    (binary, Shr, shr),
+    (assign, ShrAssign, shr_assign),
+    (binary, Sub, sub),
+    (assign, SubAssign, sub_assign),
+    (unary, Neg, neg),
+    (unary, Not, not),
 }
 
 #[cfg(feature = "std")]

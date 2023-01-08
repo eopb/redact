@@ -18,7 +18,7 @@ let encryption_key = Secret::new("hello world");
 assert_eq!("[REDACTED &str]", format!("{encryption_key:?}"))
 ```
 
-The underlying secret contained within the wrapper can only be accessed using the [expose_secret][Secret::expose_secret] method or [expose_secret] function.
+The underlying secret contained within the wrapper can only be accessed using the [expose_secret][Secret::expose_secret] method or [expose_secret] function[^1].
 
 ```rust
 use redact::Secret;
@@ -86,3 +86,34 @@ If you need strong memory protection before and after a `Secret` is dropped cons
 [`mlock(2)`]: https://man7.org/linux/man-pages/man2/mlock.2.html
 [`mprotect(2)`]: https://man7.org/linux/man-pages/man2/mprotect.2.html
 
+[^1]: [Secret] will assume that it is safe to expose its secret to its contained types implemenations of 
+[Default],
+[Hash],
+[Copy],
+[Clone],
+[Ord],
+[PartialOrd],
+[Eq],
+[PartialEq],
+[ops::Add],
+[ops::AddAssign],
+[ops::BitAnd],
+[ops::BitAndAssign],
+[ops::BitOr],
+[ops::BitOrAssign],
+[ops::BitXor],
+[ops::BitXorAssign],
+[ops::Div],
+[ops::DivAssign],
+[ops::Mul],
+[ops::MulAssign],
+[ops::Rem],
+[ops::RemAssign],
+[ops::Shl],
+[ops::ShlAssign],
+[ops::Shr],
+[ops::ShrAssign],
+[ops::Sub],
+[ops::SubAssign],
+[ops::Neg] and
+[ops::Not]
