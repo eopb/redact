@@ -199,3 +199,21 @@ pub fn expose_secret<S: Serializer, T: Serialize>(
 ) -> Result<S::Ok, S::Error> {
     secret.expose_secret().serialize(serializer)
 }
+
+#[cfg(feature = "fake")]
+use fake::Dummy;
+#[cfg(feature = "fake")]
+use rand::Rng;
+
+#[cfg(feature = "fake")]
+impl<T: Dummy<U>, U> Dummy<U> for Secret<T> {
+    #[inline]
+    fn dummy_with_rng<R: Rng + ?Sized>(config: &U, rng: &mut R) -> Self {
+        Secret(T::dummy_with_rng(config, rng))
+    }
+
+    #[inline]
+    fn dummy(config: &U) -> Self {
+        Secret(T::dummy(config))
+    }
+}
