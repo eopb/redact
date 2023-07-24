@@ -10,34 +10,31 @@ impl<'de, T: Deserialize<'de>> Deserialize<'de> for Secret<T> {
     }
 }
 
-#[cfg(feature = "serde")]
-#[derive(Serialize)]
-struct Test {
-    #[serde(serialize_with = "expose_secret")]
-    one: Secret<String>,
-    #[serde(serialize_with = "expose_secret")]
-    two: Option<Secret<String>>,
-}
-
-pub trait ContainsSecret<T> {
+/// A serializable type that contains a secret.
+///
+/// This abstraction enables [expose_secret] to be used to serialize both `Secret<T>` and
+/// `Option<Secret<T>`.
+pub trait SerializableSecret<T> {
     type Exposed<'a>: Serialize
     where
         Self: 'a;
-    fn expose_secret<'a>(&'a self, expose: impl Fn(&Secret<T>) -> &T) -> Self::Exposed<'a>;
+    /// To reduce the number of functions that are able to expose secrets we require
+    /// that the [`Secret::expose_secret`] function is passed in here.
+    fn expose_via<'a>(&'a self, expose: impl Fn(&Secret<T>) -> &T) -> Self::Exposed<'a>;
 }
 
-impl<T: Serialize> ContainsSecret<T> for Secret<T> {
+impl<T: Serialize> SerializableSecret<T> for Secret<T> {
     type Exposed<'a> = &'a T where T: 'a;
 
-    fn expose_secret<'a>(&'a self, expose: impl Fn(&Secret<T>) -> &T) -> Self::Exposed<'a> {
+    fn expose_via<'a>(&'a self, expose: impl Fn(&Secret<T>) -> &T) -> Self::Exposed<'a> {
         expose(self)
     }
 }
 
-impl<T: Serialize> ContainsSecret<T> for Option<Secret<T>> {
+impl<T: Serialize> SerializableSecret<T> for Option<Secret<T>> {
     type Exposed<'a> = Option<&'a T> where T: 'a;
 
-    fn expose_secret<'a>(&'a self, expose: impl Fn(&Secret<T>) -> &T) -> Self::Exposed<'a> {
+    fn expose_via<'a>(&'a self, expose: impl Fn(&Secret<T>) -> &T) -> Self::Exposed<'a> {
         self.as_ref().map(expose)
     }
 }
@@ -52,10 +49,18 @@ impl<T: Serialize> ContainsSecret<T> for Option<Secret<T>> {
 /// *This API requires the following crate features to be activated: `serde`*
 #[inline]
 pub fn expose_secret<S: Serializer, T: Serialize>(
-    secret: &impl ContainsSecret<T>,
+    secret: &impl SerializableSecret<T>,
     serializer: S,
 ) -> Result<S::Ok, S::Error> {
     secret
-        .expose_secret(Secret::expose_secret)
+        .expose_via(Secret::expose_secret)
         .serialize(serializer)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn it_works() {}
 }
