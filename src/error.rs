@@ -1,7 +1,6 @@
 use crate::Secret;
 
 use core::fmt;
-use std::collections::HashMap;
 use std::error::Error;
 
 impl<E: Error> fmt::Display for Secret<E> {
