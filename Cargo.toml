@@ -7,6 +7,7 @@ readme = "README.md"
 description = """
 A simple library for keeping secrets out of logs.
 """
+keywords = ["secret", "logging", "pii", "password", "no_std"]
 documentation = "https://docs.rs/redact/"
 repository = "https://github.com/eopb/redact"
 edition = "2021"
