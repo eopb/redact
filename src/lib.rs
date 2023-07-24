@@ -2,7 +2,18 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 #![forbid(unsafe_code)]
 
-use core::{any::type_name, fmt, ops, str::FromStr};
+#[cfg(feature = "std")]
+mod error;
+#[cfg(feature = "fake")]
+mod fake;
+mod ops;
+#[cfg(feature = "serde")]
+mod serde;
+
+#[cfg(feature = "serde")]
+pub use crate::serde::expose_secret;
+
+use core::{any::type_name, fmt, str::FromStr};
 
 /// See [module level documentation][crate]
 #[derive(Default, Hash, Copy, Clone, Ord, PartialOrd, Eq, PartialEq)]
@@ -84,136 +95,5 @@ impl<S: FromIterator<T>, T> FromIterator<Secret<T>> for Secret<S> {
     #[inline]
     fn from_iter<I: IntoIterator<Item = Secret<T>>>(iter: I) -> Self {
         Self(S::from_iter(iter.into_iter().map(|Secret(s)| s)))
-    }
-}
-
-macro_rules! ops {
-    { ($type:tt, $trait:ident, $method:ident), $($tt:tt)* } => {
-        ops!(($type, $trait, $method));
-        ops!($($tt)*);
-    };
-    { (binary, $trait:ident, $method:ident)} => {
-        impl<T, U> ops::$trait<Secret<U>> for Secret<T>
-        where
-            T: ops::$trait<U>,
-        {
-            type Output = Secret<T::Output>;
-            #[inline]
-            fn $method(self, rhs: Secret<U>) -> Self::Output {
-                Secret(self.0.$method(rhs.0))
-            }
-        }
-    };
-    { (assign, $trait:ident, $method:ident)} => {
-        impl<T, U> ops::$trait<Secret<U>> for Secret<T>
-        where
-            T: ops::$trait<U>,
-        {
-            #[inline]
-            fn $method(&mut self, rhs: Secret<U>) {
-                self.0.$method(rhs.0)
-            }
-        }
-    };
-    { (unary, $trait:ident, $method:ident)} => {
-        impl<T> ops::$trait for Secret<T>
-        where
-            T: ops::$trait,
-        {
-            type Output = Secret<T::Output>;
-            #[inline]
-            fn $method(self) -> Self::Output {
-                Secret(self.0.$method())
-            }
-        }
-    };
-    () => ()
-}
-
-ops! {
-    (binary, Add, add),
-    (assign, AddAssign, add_assign),
-    (binary, BitAnd, bitand),
-    (assign, BitAndAssign, bitand_assign),
-    (binary, BitOr, bitor),
-    (assign, BitOrAssign, bitor_assign),
-    (binary, BitXor, bitxor),
-    (assign, BitXorAssign, bitxor_assign),
-    (binary, Div, div),
-    (assign, DivAssign, div_assign),
-    (binary, Mul, mul),
-    (assign, MulAssign, mul_assign),
-    (binary, Rem, rem),
-    (assign, RemAssign, rem_assign),
-    (binary, Shl, shl),
-    (assign, ShlAssign, shl_assign),
-    (binary, Shr, shr),
-    (assign, ShrAssign, shr_assign),
-    (binary, Sub, sub),
-    (assign, SubAssign, sub_assign),
-    (unary, Neg, neg),
-    (unary, Not, not),
-}
-
-#[cfg(feature = "std")]
-mod error {
-    use crate::Secret;
-
-    use core::fmt;
-    use std::error::Error;
-
-    impl<E: Error> fmt::Display for Secret<E> {
-        #[inline]
-        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-            <Self as fmt::Debug>::fmt(self, f)
-        }
-    }
-
-    impl<E: Error> Error for Secret<E> {}
-}
-
-#[cfg(feature = "serde")]
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
-
-#[cfg(feature = "serde")]
-/// *This API requires the following crate features to be activated: `serde`*
-impl<'de, T: Deserialize<'de>> Deserialize<'de> for Secret<T> {
-    #[inline]
-    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        T::deserialize(deserializer).map(Self)
-    }
-}
-
-#[cfg(feature = "serde")]
-/// Exposes a [Secret] for serialization.
-///
-/// For general-purpose secret exposing see [Secret::expose_secret].
-///
-/// See [module level documentation][crate] for usage example.
-///
-/// *This API requires the following crate features to be activated: `serde`*
-#[inline]
-pub fn expose_secret<S: Serializer, T: Serialize>(
-    secret: &Secret<T>,
-    serializer: S,
-) -> Result<S::Ok, S::Error> {
-    secret.expose_secret().serialize(serializer)
-}
-
-#[cfg(feature = "fake")]
-use fake::Dummy;
-#[cfg(feature = "fake")]
-use rand::Rng;
-
-#[cfg(feature = "fake")]
-impl<T: Dummy<U>, U> Dummy<U> for Secret<T> {
-    #[inline]
-    fn dummy_with_rng<R: Rng + ?Sized>(config: &U, rng: &mut R) -> Self {
-        Secret(T::dummy_with_rng(config, rng))
-    }
-
-    #[inline]
-    fn dummy(config: &U) -> Self {
-        Secret(T::dummy(config))
     }
 }
