@@ -60,7 +60,25 @@ pub fn expose_secret<S: Serializer, T: Serialize>(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use fake::{Fake, Faker};
+    use serde::{Deserialize, Serialize};
 
     #[test]
-    fn it_works() {}
+    fn deserialize_the_serialized() {
+        #[derive(Serialize, Deserialize, fake::Dummy, PartialEq, Debug)]
+        struct Test {
+            #[serde(serialize_with = "expose_secret")]
+            one: Secret<String>,
+            #[serde(serialize_with = "expose_secret")]
+            two: Option<Secret<String>>,
+        }
+
+        let to_serialize: Test = Faker.fake();
+
+        let serialized = serde_json::to_string(&to_serialize).unwrap();
+
+        let deserialized = serde_json::from_str(&serialized).unwrap();
+
+        assert_eq!(to_serialize, deserialized)
+    }
 }
