@@ -17,14 +17,12 @@ jobs:
     - uses: taiki-e/install-action@cargo-hack
     - name: build
       run: cargo hack build --feature-powerset
-    - name: test
-      run: cargo hack test --feature-powerset
   test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - name: test
-      run: cargo test
+      run: cargo test --all-features
   fmt:
     runs-on: ubuntu-latest
     steps:
