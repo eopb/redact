@@ -14,6 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: taiki-e/install-action@cargo-hack
+    - name: hmm
+      run: ls
     - name: build
       run: cargo hack build --feature-powerset
     - name: test
