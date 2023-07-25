@@ -70,7 +70,7 @@ struct Payment {
 
 ### [secrecy](https://docs.rs/secrecy/latest/secrecy/)
 
-[Secrecy](https://crates.io/crates/secrecy) was the original inspiration for this crate and it has a very similar API.
+[Secrecy](https://crates.io/crates/secrecy) was the original inspiration for this crate and it has a similar API.
 
 One significant difference is that secrecy requires that all secrets implement [`Zeroize`] so that it can cleanly wipe secrets from memory after they are dropped.
 This unfortunately limits the types of values that secrecy can wrap in a `Secret` since every type has to be aware of `Zeroize`.
