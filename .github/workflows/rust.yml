@@ -37,6 +37,21 @@ jobs:
     - uses: actions/checkout@v3
     - name: doc
       run: cargo doc --all-features
+  minimal:
+    runs-on: ubuntu-latest
+    name: ubuntu / stable / minimal-versions
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install stable
+        uses: dtolnay/rust-toolchain@stable
+      - name: Install nightly for -Zminimal-versions
+        uses: dtolnay/rust-toolchain@nightly
+      - name: rustup default stable
+        run: rustup default stable
+      - name: cargo update -Zminimal-versions
+        run: cargo +nightly update -Zminimal-versions
+      - name: cargo check
+        run: cargo check --locked --all-features
   msrv:
     runs-on: ubuntu-latest
     # we use a matrix here just because env can't be used in job names
