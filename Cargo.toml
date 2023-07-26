@@ -11,6 +11,7 @@ keywords = ["secret", "logging", "pii", "password", "no_std"]
 documentation = "https://docs.rs/redact/"
 repository = "https://github.com/eopb/redact"
 edition = "2021"
+rust-version = "1.65"
 exclude = [".github"]
 
 [features]
