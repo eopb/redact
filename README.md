@@ -47,7 +47,7 @@ struct Payment {
 For serde support ensure the serde feature is enabled in your `Cargo.toml`.
 
 ```toml
-redact = { version = "0.0.11", features = ["serde"] }
+redact = { version = "0.1", features = ["serde"] }
 ```
 
 `Deserialize` works as expected, transparently deserializing the enclosed secret.
