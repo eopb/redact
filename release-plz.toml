@@ -1,0 +1,5 @@
+[workspace]
+changelog_config = "cliff.toml"
+
+pr_labels = ["release"]
+
