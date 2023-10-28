@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.6](https://github.com/eopb/redact/compare/v0.1.5...v0.1.6) - 2023-10-28
+
+### Other
+- enable `generate-link-to-definition` for docs.rs builds ([#38](https://github.com/eopb/redact/pull/38))
+- enable `doc_auto_cfg` for docs.rs builds ([#36](https://github.com/eopb/redact/pull/36))
+
 ## [0.1.5](https://github.com/eopb/redact/compare/v0.1.4...v0.1.5) - 2023-10-19
 
 ### Other
