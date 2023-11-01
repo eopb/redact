@@ -23,19 +23,23 @@ pub struct Secret<T>(T);
 impl<T> Secret<T> {
     /// See [module level documentation][crate]
     #[inline]
+    #[must_use = "the secret will be dropped if not used"]
     pub const fn new(secret: T) -> Self {
         Self(secret)
     }
     #[inline]
+    #[must_use]
     pub fn from(secret: impl Into<T>) -> Self {
         Self(secret.into())
     }
     #[inline]
+    #[must_use]
     pub fn try_from<U: TryInto<T>>(secret: U) -> Result<Self, Secret<U::Error>> {
         secret.try_into().map(Self).map_err(Secret)
     }
     /// See [module level documentation][crate]
     #[inline]
+    #[must_use = "expose_secret does nothing unless used"]
     pub const fn expose_secret(&self) -> &T {
         &self.0
     }
