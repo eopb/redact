@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.7](https://github.com/eopb/redact/compare/v0.1.6...v0.1.7) - 2023-11-01
+
+### Added
+- make associated functions on `Secret` `#[must_use]` ([#42](https://github.com/eopb/redact/pull/42))
+
 ## [0.1.6](https://github.com/eopb/redact/compare/v0.1.5...v0.1.6) - 2023-10-28
 
 ### Documentation
