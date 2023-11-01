@@ -11,10 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - make associated functions on `Secret` `#[must_use]` ([#42](https://github.com/eopb/redact/pull/42))
 
-### Other
-- Revert "ci: configure `git-cliff` for nicer changelogs ([#39](https://github.com/eopb/redact/pull/39))" ([#41](https://github.com/eopb/redact/pull/41))
-- configure `git-cliff` for nicer changelogs ([#39](https://github.com/eopb/redact/pull/39))
-
 ## [0.1.6](https://github.com/eopb/redact/compare/v0.1.5...v0.1.6) - 2023-10-28
 
 ### Documentation
