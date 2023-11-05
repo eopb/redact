@@ -9,7 +9,7 @@ mod error;
 mod fake;
 mod ops;
 #[cfg(feature = "serde")]
-mod serde;
+pub mod serde;
 
 #[cfg(feature = "serde")]
 pub use crate::serde::expose_secret;

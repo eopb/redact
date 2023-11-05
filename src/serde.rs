@@ -60,6 +60,12 @@ pub fn expose_secret<S: Serializer, T: Serialize>(
         .serialize(serializer)
 }
 
+#[cfg(feature = "serde")]
+#[inline]
+pub fn redacted<S: Serializer, T>(secret: &Secret<T>, serializer: S) -> Result<S::Ok, S::Error> {
+    format!("{secret:?}").serialize(serializer)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
