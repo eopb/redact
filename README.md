@@ -66,6 +66,8 @@ struct Payment {
 }
 ```
 
+If you would like to implement `Serialize` without exposing the `Secret` see [serde::redact_secret].
+
 ## Comparison with alternatives
 
 ### [secrecy](https://docs.rs/secrecy/latest/secrecy/)
