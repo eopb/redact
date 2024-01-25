@@ -42,7 +42,6 @@ impl<T: Serialize> SerializableSecret<T> for Option<Secret<T>> {
     }
 }
 
-#[cfg(feature = "serde")]
 /// Exposes a [Secret] for serialization.
 ///
 /// For general-purpose secret exposing see [Secret::expose_secret].
@@ -50,6 +49,7 @@ impl<T: Serialize> SerializableSecret<T> for Option<Secret<T>> {
 /// See [module level documentation][crate] for usage example.
 ///
 /// *This API requires the following crate features to be activated: `serde`*
+#[cfg(feature = "serde")]
 #[inline]
 pub fn expose_secret<S: Serializer, T: Serialize>(
     secret: &impl SerializableSecret<T>,
@@ -60,6 +60,15 @@ pub fn expose_secret<S: Serializer, T: Serialize>(
         .serialize(serializer)
 }
 
+/// Serialize a redacted [Secret] without exposing the contained data.
+///
+/// The secret will be serialized as its [`Debug`] output.
+/// Since the data is redacted, it is not possible to deserialize data serialized in this way.
+///
+/// This function is designed to be used with `#[serde(serialize_with)]` in the same way as
+/// [serde::expose_secret][crate::serde::expose_secret].
+///
+/// *This API requires the following crate features to be activated: `serde`*
 #[cfg(feature = "serde")]
 #[inline]
 pub fn redacted<S: Serializer, T>(secret: &Secret<T>, serializer: S) -> Result<S::Ok, S::Error> {
