@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.8](https://github.com/eopb/redact/compare/v0.1.7...v0.1.8) - 2024-01-25
+
+### Added
+- `serde::redact_secret` convenience `serialize_with` - serialize without exposing ([#46](https://github.com/eopb/redact/pull/46))
+
 ## [0.1.7](https://github.com/eopb/redact/compare/v0.1.6...v0.1.7) - 2023-11-01
 
 ### Added
