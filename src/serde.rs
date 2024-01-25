@@ -71,7 +71,10 @@ pub fn expose_secret<S: Serializer, T: Serialize>(
 /// *This API requires the following crate features to be activated: `serde`*
 #[cfg(feature = "serde")]
 #[inline]
-pub fn redacted<S: Serializer, T>(secret: &Secret<T>, serializer: S) -> Result<S::Ok, S::Error> {
+pub fn redact_secret<S: Serializer, T>(
+    secret: &Secret<T>,
+    serializer: S,
+) -> Result<S::Ok, S::Error> {
     format!("{secret:?}").serialize(serializer)
 }
 
