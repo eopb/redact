@@ -19,6 +19,7 @@ default = ["std"]
 # impl std::error::Error for Secret<E> where E: Error
 std = []
 fake = ["dep:fake", "dep:rand"]
+serde = ["dep:serde"]
 
 [dependencies]
 fake = { version = "2.5", optional = true, default-features = false }
