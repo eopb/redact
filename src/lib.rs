@@ -10,6 +10,8 @@ mod fake;
 mod ops;
 #[cfg(feature = "serde")]
 pub mod serde;
+#[cfg(feature = "zeroize")]
+mod zeroize;
 
 #[cfg(feature = "serde")]
 pub use crate::serde::expose_secret;
