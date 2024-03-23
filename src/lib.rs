@@ -34,7 +34,6 @@ impl<T> Secret<T> {
         Self(secret.into())
     }
     #[inline]
-    #[must_use]
     pub fn try_from<U: TryInto<T>>(secret: U) -> Result<Self, Secret<U::Error>> {
         secret.try_into().map(Self).map_err(Secret)
     }
