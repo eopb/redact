@@ -23,13 +23,13 @@ pub trait SerializableSecret<T> {
         Self: 'a;
     /// To reduce the number of functions that are able to expose secrets we require
     /// that the [`Secret::expose_secret`] function is passed in here.
-    fn expose_via<'a>(&'a self, expose: impl Fn(&Secret<T>) -> &T) -> Self::Exposed<'a>;
+    fn expose_via(&self, expose: impl Fn(&Secret<T>) -> &T) -> Self::Exposed<'_>;
 }
 
 impl<T: Serialize> SerializableSecret<T> for Secret<T> {
     type Exposed<'a> = &'a T where T: 'a;
 
-    fn expose_via<'a>(&'a self, expose: impl Fn(&Secret<T>) -> &T) -> Self::Exposed<'a> {
+    fn expose_via(&self, expose: impl Fn(&Secret<T>) -> &T) -> Self::Exposed<'_> {
         expose(self)
     }
 }
@@ -37,7 +37,7 @@ impl<T: Serialize> SerializableSecret<T> for Secret<T> {
 impl<T: Serialize> SerializableSecret<T> for Option<Secret<T>> {
     type Exposed<'a> = Option<&'a T> where T: 'a;
 
-    fn expose_via<'a>(&'a self, expose: impl Fn(&Secret<T>) -> &T) -> Self::Exposed<'a> {
+    fn expose_via(&self, expose: impl Fn(&Secret<T>) -> &T) -> Self::Exposed<'_> {
         self.as_ref().map(expose)
     }
 }
