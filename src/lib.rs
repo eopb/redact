@@ -18,6 +18,7 @@ use core::{any::type_name, fmt, str::FromStr};
 
 /// See [module level documentation][crate]
 #[derive(Default, Hash, Copy, Clone, Ord, PartialOrd, Eq, PartialEq)]
+#[repr(transparent)]
 pub struct Secret<T>(T);
 
 impl<T> Secret<T> {
