@@ -75,7 +75,7 @@ pub fn redact_secret<S: Serializer, T>(
     secret: &Secret<T>,
     serializer: S,
 ) -> Result<S::Ok, S::Error> {
-    format!("{secret:?}").serialize(serializer)
+    serializer.collect_str(&format_args!("{secret:?}"))
 }
 
 #[cfg(test)]
