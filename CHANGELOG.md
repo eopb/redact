@@ -6,6 +6,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.9](https://github.com/eopb/redact/compare/v0.1.8...v0.1.9) - 2024-03-24
+
+### Added
+- support zeroizing secrets
+
+### Fixed
+- removing `Secret::zeroizing` method
+- remove duplicate #[must_use]
+- remove `serde` feature dependency on `std`
+
+### Other
+- Merge pull request [#56](https://github.com/eopb/redact/pull/56) from eopb/push-smksztlxprww
+- stop repeating versions in dev-dependencies
+- Merge pull request [#55](https://github.com/eopb/redact/pull/55) from eopb/push-kxklklmqkwly
+- use elided lifetimes for `SerializableSecret`
+- make `serde` feature explicit
+- add all-features redact to `dev-dependencies` ([#48](https://github.com/eopb/redact/pull/48))
+
 ## [0.1.8](https://github.com/eopb/redact/compare/v0.1.7...v0.1.8) - 2024-01-25
 
 ### Added
