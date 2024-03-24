@@ -1,6 +1,9 @@
 use crate::Secret;
 
-use core::ops;
+use core::{
+    ops,
+    ops::{Deref, DerefMut},
+};
 
 macro_rules! ops {
     { ($type:tt, $trait:ident, $method:ident), $($tt:tt)* } => {
@@ -68,4 +71,36 @@ ops! {
     (assign, SubAssign, sub_assign),
     (unary, Neg, neg),
     (unary, Not, not),
+}
+
+use bytemuck::TransparentWrapper;
+
+/// We introduce this private wrapper around `Secret` to safely implement [TransparentWrapper] without
+/// inadvertently providing a way for `Secret`s to be exposed without using `Secret::expose_secret`
+#[repr(transparent)]
+struct Wrapper<T: ?Sized>(Secret<T>);
+
+// SAFETY: `Secret` and `Wrapper` both contains only a single field and are `#[repr(transparent)]`.
+// This meets the documented requirements [bytemuck::TransparentWrapper] as long as we
+// do not override any of its methods.
+unsafe impl<T: ?Sized> bytemuck::TransparentWrapper<T> for Wrapper<T> {}
+
+impl<T> Deref for Secret<T>
+where
+    T: Deref,
+{
+    type Target = Secret<T::Target>;
+
+    fn deref(&self) -> &Self::Target {
+        &Wrapper::wrap_ref(self.0.deref()).0
+    }
+}
+
+impl<T> DerefMut for Secret<T>
+where
+    T: DerefMut,
+{
+    fn deref_mut(&mut self) -> &mut Secret<T::Target> {
+        &mut Wrapper::wrap_mut(self.0.deref_mut()).0
+    }
 }
