@@ -68,23 +68,68 @@ struct Payment {
 
 If you would like to implement `Serialize` without exposing the `Secret` see [serde::redact_secret].
 
+## Zeroizing `Secret`s
+
+`redact` does not require `Secret`s to be [`Zeroize`][::zeroize::Zeroize]able but does allow `Secret`s to be `Zeroize`d when the contained secret is `Zeroize`able.
+To be able to `Zeroize` `Secret`s, enable `zeroize` in your `Cargo.toml`.
+
+```toml
+redact = { version = "0.1", features = ["zeroize"] }
+zeroize = "1"
+```
+
+Once enabled, it is possible zeroize secrets.
+
+```rust
+# use redact::Secret;
+use zeroize::Zeroize;
+
+
+fn main() {
+    let mut secret = Secret::new("hunter2".to_owned());
+
+    // [ ... ] use secret here
+
+    // Now that we're done using the secret, zero it out.
+    secret.zeroize();
+    # assert_ne!(*secret.expose_secret(), "hunter2")
+}
+```
+
+If you would like your `Secret` to be automatically `Zeroize`d when it is no longer being used,
+consider wrapping your `Secret` in [`Zeroizing`][::zeroize::Zeroizing] which will `Zeroize` your secret when it is [`Drop`]ed
+
+```rust
+# use redact::Secret;
+use zeroize::Zeroizing;
+
+
+fn main() {
+    let mut secret = Zeroizing::new(Secret::new("hunter2".to_owned()));
+
+    // [ ... ] use secret here
+
+    // The secret is automatically zeroed out at the end of the scope when it is dropped
+}
+```
+
 ## Comparison with alternatives
 
 ### [secrecy](https://docs.rs/secrecy/latest/secrecy/)
 
 [Secrecy](https://crates.io/crates/secrecy) was the original inspiration for this crate and it has a similar API.
 
-One significant difference is that secrecy requires that all secrets implement [`Zeroize`] so that it can cleanly wipe secrets from memory after they are dropped.
+One significant difference is that secrecy requires that all secrets implement [`Zeroize`](https://docs.rs/secrecy/latest/secrecy/trait.Zeroize.html) so that it can cleanly wipe secrets from memory after they are dropped.
 This unfortunately limits the types of values that secrecy can wrap in a `Secret` since every type has to be aware of `Zeroize`.
 
-Redact relaxes this requirement, allowing all types to be `Secret`s. If you need zeroization consider [secrecy](https://crates.io/crates/secrecy).
+Redact relaxes this requirement, allowing all types to be `Secret`s.
+When zeroizing is required, consider the techniques [above](#zeroizing-secrets).
 
 ### [secrets](https://docs.rs/secrets/latest/secrets/)
 
 [Secrets](https://crates.io/crates/secrets) provides even stronger memory protection than [secrecy](#secrecy) using [`mlock(2)`]/[`mprotect(2)`] among other things.
 If you need strong memory protection before and after a `Secret` is dropped consider [secrets](https://crates.io/crates/secrets).
 
-[`Zeroize`]: https://docs.rs/secrecy/latest/secrecy/trait.Zeroize.html
 [`mlock(2)`]: https://man7.org/linux/man-pages/man2/mlock.2.html
 [`mprotect(2)`]: https://man7.org/linux/man-pages/man2/mprotect.2.html
 
