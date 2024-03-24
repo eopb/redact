@@ -6,6 +6,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.9](https://github.com/eopb/redact/compare/v0.1.8...v0.1.9) - 2024-03-24
+
+### New features
+- Support zeroizing secrets with new feature `zeroize`
+- Allow `Secret`s to be unsized
+- `Secret`s are now `#[repr(transparent)]`
+- `serde` feature now supports `no_std`
+
+### Internal
+- remove duplicate #[must_use]
+- stop repeating versions in dev-dependencies
+- use elided lifetimes for `SerializableSecret`
+- make `serde` feature explicit
+- fixed clippy lints
+
 ## [0.1.8](https://github.com/eopb/redact/compare/v0.1.7...v0.1.8) - 2024-01-25
 
 ### Added
