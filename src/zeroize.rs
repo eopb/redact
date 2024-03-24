@@ -15,9 +15,3 @@ impl<T: TryZeroize> TryZeroize for Secret<T> {
 }
 
 impl<T: ZeroizeOnDrop> ZeroizeOnDrop for Secret<T> {}
-
-impl<T: Zeroize> Secret<T> {
-    pub fn zeroizing(self) -> zeroize::Zeroizing<Self> {
-        zeroize::Zeroizing::new(self)
-    }
-}
