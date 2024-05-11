@@ -12,11 +12,8 @@ impl<'de, T: Deserialize<'de>> Deserialize<'de> for Secret<T> {
 
 /// A serializable type that contains a secret.
 ///
-/// This abstraction enables [expose_secret] to be used to serialize both `Secret<T>` and
-/// `Option<Secret<T>>`.
-///
-/// This type is currently private. If you feel that a public `SerializableSecret` could
-/// be useful for your use case please open a PR :)
+/// This abstraction enables [expose_secret] to be used to serialize both `Secret<T>`, `&Secret<T>`
+/// and `Option<Secret<T>>`.
 pub trait SerializableSecret<T> {
     type Exposed<'a>: Serialize
     where
