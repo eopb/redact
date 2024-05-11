@@ -6,6 +6,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.10](https://github.com/eopb/redact/compare/v0.1.9...v0.1.10) - 2024-05-11
+
+### New features
+- Implemented `SerializableSecret` for `&Secret<T>`
+  This enables `&Secret<T>` to be `Serialized` with `redact::serde::expose_secret`
+  and `redact::serde::redact_secret`.
+
+### Other
+- Fix issue where dependency versions were not being repeated in dev-dependencies
+- Minor documentation improvements
+
 ## [0.1.9](https://github.com/eopb/redact/compare/v0.1.8...v0.1.9) - 2024-03-24
 
 ### New features
