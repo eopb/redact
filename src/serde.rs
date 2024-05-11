@@ -27,7 +27,7 @@ pub trait SerializableSecret<T> {
 }
 
 impl<T: Serialize> SerializableSecret<T> for &Secret<T> {
-    type Exposed<'a> = &'a T where T: 'a;
+    type Exposed<'a> = &'a T where T: 'a, Self: 'a;
 
     fn expose_via(&self, expose: impl Fn(&Secret<T>) -> &T) -> Self::Exposed<'_> {
         expose(self)
