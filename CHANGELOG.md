@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.11](https://github.com/eopb/redact/compare/v0.1.10...v0.1.11) - 2025-07-16
+
+### Other
+
+- run `cargo-fmt`
+- make Vec<Secret<T>> serializable
+
 ## [0.1.10](https://github.com/eopb/redact/compare/v0.1.9...v0.1.10) - 2024-05-11
 
 ### New features
