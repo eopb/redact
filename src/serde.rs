@@ -24,7 +24,11 @@ pub trait SerializableSecret<T> {
 }
 
 impl<T: Serialize> SerializableSecret<T> for &Secret<T> {
-    type Exposed<'a> = &'a T where T: 'a, Self: 'a;
+    type Exposed<'a>
+        = &'a T
+    where
+        T: 'a,
+        Self: 'a;
 
     fn expose_via(&self, expose: impl Fn(&Secret<T>) -> &T) -> Self::Exposed<'_> {
         expose(self)
@@ -32,7 +36,10 @@ impl<T: Serialize> SerializableSecret<T> for &Secret<T> {
 }
 
 impl<T: Serialize> SerializableSecret<T> for Secret<T> {
-    type Exposed<'a> = &'a T where T: 'a;
+    type Exposed<'a>
+        = &'a T
+    where
+        T: 'a;
 
     fn expose_via(&self, expose: impl Fn(&Secret<T>) -> &T) -> Self::Exposed<'_> {
         expose(self)
@@ -40,7 +47,10 @@ impl<T: Serialize> SerializableSecret<T> for Secret<T> {
 }
 
 impl<T: Serialize> SerializableSecret<T> for Option<Secret<T>> {
-    type Exposed<'a> = Option<&'a T> where T: 'a;
+    type Exposed<'a>
+        = Option<&'a T>
+    where
+        T: 'a;
 
     fn expose_via(&self, expose: impl Fn(&Secret<T>) -> &T) -> Self::Exposed<'_> {
         self.as_ref().map(expose)
@@ -48,8 +58,14 @@ impl<T: Serialize> SerializableSecret<T> for Option<Secret<T>> {
 }
 
 #[cfg(feature = "std")]
-impl<T: Serialize> SerializableSecret<T> for Vec<Secret<T>> where for<'a> Vec<&'a T>: Serialize {
-    type Exposed<'a> = Vec<&'a T> where T: 'a;
+impl<T: Serialize> SerializableSecret<T> for Vec<Secret<T>>
+where
+    for<'a> Vec<&'a T>: Serialize,
+{
+    type Exposed<'a>
+        = Vec<&'a T>
+    where
+        T: 'a;
 
     fn expose_via(&self, expose: impl Fn(&Secret<T>) -> &T) -> Self::Exposed<'_> {
         self.iter().map(expose).collect()
