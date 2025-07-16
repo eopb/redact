@@ -12,8 +12,8 @@ impl<'de, T: Deserialize<'de>> Deserialize<'de> for Secret<T> {
 
 /// A serializable type that contains a secret.
 ///
-/// This abstraction enables [expose_secret] to be used to serialize both `Secret<T>`, `&Secret<T>`
-/// and `Option<Secret<T>>`.
+/// This abstraction enables [expose_secret] to be used to serialize both `Secret<T>`, `&Secret<T>`,
+/// `Option<Secret<T>>` and `Vec<Secret<T>>`.
 pub trait SerializableSecret<T> {
     type Exposed<'a>: Serialize
     where
@@ -44,6 +44,15 @@ impl<T: Serialize> SerializableSecret<T> for Option<Secret<T>> {
 
     fn expose_via(&self, expose: impl Fn(&Secret<T>) -> &T) -> Self::Exposed<'_> {
         self.as_ref().map(expose)
+    }
+}
+
+#[cfg(feature = "std")]
+impl<T: Serialize> SerializableSecret<T> for Vec<Secret<T>> where for<'a> Vec<&'a T>: Serialize {
+    type Exposed<'a> = Vec<&'a T> where T: 'a;
+
+    fn expose_via(&self, expose: impl Fn(&Secret<T>) -> &T) -> Self::Exposed<'_> {
+        self.iter().map(expose).collect()
     }
 }
 
@@ -97,6 +106,8 @@ mod tests {
             one: Secret<String>,
             #[serde(serialize_with = "expose_secret")]
             two: Option<Secret<String>>,
+            #[serde(serialize_with = "expose_secret")]
+            three: Vec<Secret<String>>,
         }
 
         let to_serialize: Test = Faker.fake();
